@@ -6,34 +6,31 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 @Entity
 public class Product {
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    private double price;
 
-	private double price;
+    public Product() {
+    }
 
-	public Long getId() {
-		return id;
-	}
+    public Product(double price) {
+        this.price = price;
+    }
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    public Long getId() {
+        return id;
+    }
 
-	public double getPrice() {
-		return price;
-	}
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-	public void setPrice(double price) {
-		this.price = price;
-	}
+    public double getPrice() {
+        return price;
+    }
 
-	public Product(Long id, double price) {
-		super();
-		this.id = id;
-		this.price = price;
-	}
-
-	// Constructors, getters, and setters
-	
+    public void setPrice(double price) {
+        this.price = price;
+    }
 }

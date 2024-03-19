@@ -1,111 +1,76 @@
 package com.gravity.big_diwali_sale.service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.gravity.big_diwali_sale.entity.DiscountResponse;
+import com.gravity.big_diwali_sale.repository.ProductRepository;
 @Service
 public class ProductService {
-	//@Autowired
-	//private ProductRepository productRepository;
+	 @Autowired
+	    private ProductRepository productRepository;
 
-	 public DiscountResponse applyOfferRule1(List<Double> productPrices) {
+	    public List<List<Double>> maximizeDiscount(List<Double> productPrices, int rule) {
 	        List<Double> discountedItems = new ArrayList<>();
 	        List<Double> payableItems = new ArrayList<>();
-	        
-	        // Sort the product prices in descending order
-	        productPrices.sort((a, b) -> Double.compare(b, a));
 
-	        // Iterate through the product prices to find pairs for discount
+	        // Sorting the product prices in descending order
+	        Collections.sort(productPrices, Collections.reverseOrder());
+
+	        switch (rule) {
+	            case 1:
+	                applyOfferRule1(productPrices, discountedItems, payableItems);
+	                break;
+	            case 2:
+	                applyOfferRule2(productPrices, discountedItems, payableItems);
+	                break;
+	            case 3:
+	                applyOfferRule3(productPrices, discountedItems, payableItems);
+	                break;
+	            default:
+	                // Handle invalid rule number
+	                break;
+	        }
+
+	        return List.of(discountedItems, payableItems);
+	    }
+
+	    private void applyOfferRule1(List<Double> productPrices, List<Double> discountedItems, List<Double> payableItems) {
+	        if (productPrices.size() >= 2) {
+	            discountedItems.add(productPrices.get(0)); // Add the highest priced item as discounted
+	            discountedItems.add(productPrices.get(1)); // Add the second highest priced item as discounted
+	            payableItems.addAll(productPrices.subList(2, productPrices.size())); // Add the rest as payable items
+	        }
+	    }
+
+	    private void applyOfferRule2(List<Double> productPrices, List<Double> discountedItems, List<Double> payableItems) {
 	        for (int i = 0; i < productPrices.size(); i++) {
-	            if (i + 1 < productPrices.size()) {
-	                // Check if the next item's price is less than or equal to the current item's price
-	                if (productPrices.get(i + 1) <= productPrices.get(i)) {
-	                    discountedItems.add(productPrices.get(i));
-	                    discountedItems.add(productPrices.get(i + 1));
-	                    i++; // Skip the next item since it's already paired
-	                } else {
-	                    // If the next item's price is greater, add the current item to payable items
-	                    payableItems.add(productPrices.get(i));
+	            double currentPrice = productPrices.get(i);
+	            boolean isDiscounted = false;
+	            for (int j = i + 1; j < productPrices.size(); j++) {
+	                if (productPrices.get(j) <= currentPrice) {
+	                    discountedItems.add(currentPrice);
+	                    discountedItems.add(productPrices.get(j));
+	                    isDiscounted = true;
+	                    break;
 	                }
-	            } else {
-	                // If it's the last item and it's unpaired, add it to payable items
-	                payableItems.add(productPrices.get(i));
+	            }
+	            if (!isDiscounted) {
+	                payableItems.add(currentPrice);
 	            }
 	        }
-
-	        return new DiscountResponse(discountedItems, payableItems);
 	    }
 
-	 public DiscountResponse applyOfferRule2(List<Double> productPrices) {
-	        // Sort the prices in descending order
-	        List<Double> sortedPrices = productPrices.stream().sorted((a, b) -> Double.compare(b, a)).collect(Collectors.toList());
-
-	        // Find pairs with maximum discount
-	        List<Double> discountedItems = new ArrayList<>();
-	        List<Double> payableItems = new ArrayList<>();
-	        boolean[] paired = new boolean[sortedPrices.size()];
-
-	        for (int i = 0; i < sortedPrices.size(); i++) {
-	            if (!paired[i]) {
-	                discountedItems.add(sortedPrices.get(i)); // Add the first item to discounted items
-	                paired[i] = true; // Mark the item as paired
-
-	                // Find a pair for the current item
-	                for (int j = i + 1; j < sortedPrices.size(); j++) {
-	                    if (!paired[j] && sortedPrices.get(j) < sortedPrices.get(i)) {
-	                        discountedItems.add(sortedPrices.get(j)); // Add the pair to discounted items
-	                        paired[j] = true; // Mark the pair as paired
-	                        break; // Exit inner loop
-	                    }
-	                }
-	            }
+	    private void applyOfferRule3(List<Double> productPrices, List<Double> discountedItems, List<Double> payableItems) {
+	        if (productPrices.size() >= 4) {
+	            discountedItems.add(productPrices.get(0)); // Add the highest priced item as discounted
+	            discountedItems.add(productPrices.get(1)); // Add the second highest priced item as discounted
+	            discountedItems.add(productPrices.get(2)); // Add the third highest priced item as discounted
+	            discountedItems.add(productPrices.get(3)); // Add the fourth highest priced item as discounted
+	            payableItems.addAll(productPrices.subList(4, productPrices.size())); // Add the rest as payable items
 	        }
-
-	        // Add unpaired items to payable items
-	        for (int i = 0; i < sortedPrices.size(); i++) {
-	            if (!paired[i]) {
-	                payableItems.add(sortedPrices.get(i));
-	            }
-	        }
-
-	        return new DiscountResponse(discountedItems, payableItems);
-	    }
-
-	 public DiscountResponse applyOfferRule3(List<Double> productPrices) {
-	        // Sort the prices in descending order
-	        List<Double> sortedPrices = productPrices.stream().sorted((a, b) -> Double.compare(b, a)).collect(Collectors.toList());
-
-	        // Find pairs with maximum discount
-	        List<Double> discountedItems = new ArrayList<>();
-	        List<Double> payableItems = new ArrayList<>();
-
-	        // Iterate through sorted prices, pairing two items for each iteration
-	        for (int i = 0; i < sortedPrices.size(); i += 2) {
-	            if (i + 1 < sortedPrices.size()) {
-	                // Check if the second item's price is less than the first item's price
-	                if (sortedPrices.get(i + 1) < sortedPrices.get(i)) {
-	                    // Add the pair to discounted items
-	                    discountedItems.add(sortedPrices.get(i));
-	                    discountedItems.add(sortedPrices.get(i + 1));
-	                } else {
-	                    // Add the first item to payable items
-	                    payableItems.add(sortedPrices.get(i));
-	                    // Check if there's an unpaired item left
-	                    if (i + 2 >= sortedPrices.size()) {
-	                        // Add the last unpaired item to payable items
-	                        payableItems.add(sortedPrices.get(i + 1));
-	                    }
-	                }
-	            } else {
-	                // Add the last unpaired item to payable items
-	                payableItems.add(sortedPrices.get(i));
-	            }
-	        }
-
-	        return new DiscountResponse(discountedItems, payableItems);
 	    }
 }
