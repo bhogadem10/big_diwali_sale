@@ -12,5 +12,28 @@ public class Product {
 
 	private double price;
 
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public double getPrice() {
+		return price;
+	}
+
+	public void setPrice(double price) {
+		this.price = price;
+	}
+
+	public Product(Long id, double price) {
+		super();
+		this.id = id;
+		this.price = price;
+	}
+
 	// Constructors, getters, and setters
+	
 }
