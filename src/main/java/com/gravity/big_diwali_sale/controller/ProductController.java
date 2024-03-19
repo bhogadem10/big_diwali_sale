@@ -23,24 +23,18 @@ public class ProductController {
 		return "Hello!!!!";
 	}
 
-	@PostMapping("/products/discount-rule1")
-    public DiscountResponse applyOfferRule1(@RequestBody List<Double> productPrices) {
-        List<Double> discountedItems = productService.applyOfferRule1(productPrices);
-        List<Double> payableItems = productPrices.stream().filter(price -> !discountedItems.contains(price)).toList();
-        return new DiscountResponse(discountedItems, payableItems);
-    }
+	 @PostMapping("/products/discount-rule1")
+	    public DiscountResponse applyOfferRule1(@RequestBody List<Double> productPrices) {
+	        return productService.applyOfferRule1(productPrices);
+	    }
 
-    @PostMapping("/products/discount-rule2")
-    public DiscountResponse applyOfferRule2(@RequestBody List<Double> productPrices) {
-        List<Double> discountedItems = productService.applyOfferRule2(productPrices);
-        List<Double> payableItems = productPrices.stream().filter(price -> !discountedItems.contains(price)).toList();
-        return new DiscountResponse(discountedItems, payableItems);
-    }
+	    @PostMapping("/products/discount-rule2")
+	    public DiscountResponse applyOfferRule2(@RequestBody List<Double> productPrices) {
+	        return productService.applyOfferRule2(productPrices);
+	    }
 
-    @PostMapping("/products/discount-rule3")
-    public DiscountResponse applyOfferRule3(@RequestBody List<Double> productPrices) {
-        List<Double> discountedItems = productService.applyOfferRule3(productPrices);
-        List<Double> payableItems = productPrices.stream().filter(price -> !discountedItems.contains(price)).toList();
-        return new DiscountResponse(discountedItems, payableItems);
-    }
+	    @PostMapping("/products/discount-rule3")
+	    public DiscountResponse applyOfferRule3(@RequestBody List<Double> productPrices) {
+	        return productService.applyOfferRule3(productPrices);
+	    }
 }
